@@ -1,0 +1,27 @@
+<div class="text-center">
+  <form class="form-signup" *ngIf="!successfullySignup" [formGroup]="signupForm" (ngSubmit)="onSubmitSignup(signupForm.value)">
+    <h1 class="h3 mb-3 font-weight-normal">Please signup</h1>
+
+    <label class="sr-only">Email address</label>
+    <input type="email" formControlName="email" class="form-control" placeholder="Email address" autofocus>
+
+    <label class="sr-only">Password</label>
+    <input type="password" formControlName="password" class="form-control" placeholder="Password">
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign Up</button>
+    <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
+  </form>
+
+  <form class="form-signup" *ngIf="successfullySignup" [formGroup]="confirmationForm" (ngSubmit)="onSubmitConfirmation(confirmationForm.value)">
+    <h1 class="h3 mb-3 font-weight-normal">Please Confirm your account</h1>
+
+    <label class="sr-only">Email address</label>
+    <input type="email" formControlName="email" class="form-control" placeholder="Email address" autofocus>
+
+    <label class="sr-only">Confirmation Code</label>
+    <input type="text" formControlName="confirmationCode" class="form-control" placeholder="Confirmation Code">
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Confirm</button>
+    <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
+  </form>
+</div>

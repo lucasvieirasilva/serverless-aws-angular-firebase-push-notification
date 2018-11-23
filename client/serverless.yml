@@ -1,4 +1,4 @@
-service: adi-web
+service: angular-firebase-push-notification-client
 
 plugins:
   - serverless-single-page-app-plugin
