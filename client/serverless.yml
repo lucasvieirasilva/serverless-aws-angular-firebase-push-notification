@@ -1,4 +1,4 @@
-service: angular-firebase-push-notification-client
+service: ng-fcm-client
 
 plugins:
   - serverless-single-page-app-plugin
