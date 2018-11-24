@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CognitoAuthService } from '../auth/auth.service';
+import { UserService } from '../user/user.service';
 
 @Component({
     selector: 'app-signup',
@@ -10,13 +11,12 @@ import { CognitoAuthService } from '../auth/auth.service';
 })
 export class SignupComponent implements OnInit {
     public signupForm: FormGroup;
-    public confirmationForm: FormGroup;
-    public successfullySignup: boolean;
 
     constructor(
         private fb: FormBuilder,
         private router: Router,
-        private auth: CognitoAuthService
+        private auth: CognitoAuthService,
+        private userService: UserService
     ) { }
 
     ngOnInit() {
@@ -28,30 +28,14 @@ export class SignupComponent implements OnInit {
             'email': ['', Validators.required],
             'password': ['', Validators.required]
         });
-        this.confirmationForm = this.fb.group({
-            'email': ['', Validators.required],
-            'confirmationCode': ['', Validators.required]
-        });
     }
 
     onSubmitSignup(value: any) {
         const email = value.email, password = value.password;
         this.auth.signUp(email, password)
             .subscribe(
-                result => {
-                    this.successfullySignup = true;
-                },
-                error => {
-                    console.log(error);
-                });
-    }
-
-    onSubmitConfirmation(value: any) {
-        const email = value.email, confirmationCode = value.confirmationCode;
-        this.auth.confirmSignUp(email, confirmationCode)
-            .subscribe(
-                result => {
-                    this.router.navigate(['/login']);
+                async () => {
+                    await this.userService.createUser(email).toPromise();
                 },
                 error => {
                     console.log(error);

@@ -15,10 +15,10 @@ export class AWSHttpClient {
     get = (path: string, pathVariables?: IPathVariables, queryParams?: IQueryStringParams) =>
         this.request(path, 'GET', pathVariables, queryParams)
 
-    post = (path: string, pathVariables?: IPathVariables, queryParams?: IQueryStringParams, body?: any) =>
+    post = (path: string, body?: any, pathVariables?: IPathVariables, queryParams?: IQueryStringParams) =>
         this.request(path, 'POST', pathVariables, queryParams, body ? body : {})
 
-    put = (path: string, pathVariables?: IPathVariables, queryParams?: IQueryStringParams, body?: any) =>
+    put = (path: string, body?: any, pathVariables?: IPathVariables, queryParams?: IQueryStringParams) =>
         this.request(path, 'PUT', pathVariables, queryParams, body ? body : {})
 
     delete = (path: string, pathVariables?: IPathVariables, queryParams?: IQueryStringParams) =>

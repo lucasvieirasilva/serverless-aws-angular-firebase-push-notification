@@ -6,6 +6,7 @@ import {
 import { CognitoAuthService } from '../auth/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { UserService } from '../user/user.service';
 
 @Component({
     selector: 'app-signin',
@@ -17,7 +18,8 @@ export class SigninComponent implements OnInit {
     constructor(
         private fb: FormBuilder,
         private router: Router,
-        private auth: CognitoAuthService) { }
+        private auth: CognitoAuthService,
+        private userService: UserService) { }
 
     public loginForm: FormGroup;
 
@@ -32,10 +34,11 @@ export class SigninComponent implements OnInit {
         const userData = await this.auth.socialService.signIn(socialPlatformProvider);
 
         this.auth.federatedSignIn(socialPlatform, userData).subscribe(
-            result => {
+            async (username: string) => {
+                await this.userService.createUser(username).toPromise();
                 this.router.navigate(['/']);
             },
-            error => {
+            (error: any) => {
                 console.log(error);
             });
     }
@@ -55,7 +58,7 @@ export class SigninComponent implements OnInit {
         const email = value.email, password = value.password;
         this.auth.signIn(email, password)
             .subscribe(
-                result => {
+                () => {
                     this.router.navigate(['/']);
                 },
                 error => {

@@ -1,5 +1,5 @@
 # serverless.yml
-service: serverless-firebase-push-notification
+service: ng-fcm
 
 plugins:
   - serverless-webpack
@@ -49,12 +49,12 @@ provider:
       Resource: { "Fn::Join" : ["",["arn:aws:dynamodb:",{"Ref":"AWS::Region"},":*:*"]] }
 
 functions:
-  helloworld:
-    handler: src/user/helloworld.main
+  createUser:
+    handler: src/user/create.main
     events:
       - http:
-          path: hello
-          method: get
+          path: /user
+          method: post
           cors: true
           authorizer: aws_iam
               
@@ -62,17 +62,30 @@ functions:
     handler: src/user/confirm.main
     events:
       - cognitoUserPool:
-          pool: FirebaseNotification
+          pool: NgFcm
           trigger: PreSignUp
   
 resources:
   Resources:
-    
+    UserTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: "NgFcmUsers"
+        AttributeDefinitions:
+          - AttributeName: identityId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: identityId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
     # Cognito - User Pool
-    CognitoUserPoolFirebaseNotification:
+    CognitoUserPoolNgFcm:
       Type: AWS::Cognito::UserPool
       Properties:
-        UserPoolName: serverless-firebase-notification-userpool
+        UserPoolName: ng-fcm-user-pool
         AutoVerifiedAttributes:
           - email
         MfaConfiguration: OFF
@@ -87,18 +100,18 @@ resources:
         GenerateSecret: false
         RefreshTokenValidity: 200
         UserPoolId:
-          Ref: CognitoUserPoolFirebaseNotification
+          Ref: CognitoUserPoolNgFcm
 
     IdentityPool:
       Type: "AWS::Cognito::IdentityPool"
       Properties:
-        IdentityPoolName: firebase_notification_api_identity_pool
+        IdentityPoolName: ng_fcm_api_identity_pool
         AllowUnauthenticatedIdentities: true
         CognitoIdentityProviders:
           - ClientId:
               Ref: AngularAppClient
             ProviderName:
-              Fn::GetAtt: CognitoUserPoolFirebaseNotification.ProviderName
+              Fn::GetAtt: CognitoUserPoolNgFcm.ProviderName
         SupportedLoginProviders:
           graph.facebook.com: ${self:custom.variables.facebook_app_id}
           accounts.google.com: ${self:custom.variables.google_app_id}
@@ -174,24 +187,11 @@ resources:
             Fn::GetAtt:
               - IdentityPoolUnAuthRole
               - Arn
-    
-    # ApiGatewayAuthorizer: 
-    #   Type: AWS::ApiGateway::Authorizer
-    #   Properties: 
-    #     Name: CognitoUserPool
-    #     Type: COGNITO_USER_POOLS
-    #     IdentitySource: method.request.header.Authorization
-    #     RestApiId: 
-    #       Ref: ApiGatewayRestApi
-    #     ProviderARNs: 
-    #       - Fn::GetAtt:
-    #           - CognitoUserPoolFirebaseNotification
-    #           - Arn
   Outputs:
     UserPoolId:
       Description: "The ID of the user pool that is created."
       Value:
-        Ref: CognitoUserPoolFirebaseNotification
+        Ref: CognitoUserPoolNgFcm
 
     AngularAppClientId:
       Description: "The ID of the user pool react app client id."

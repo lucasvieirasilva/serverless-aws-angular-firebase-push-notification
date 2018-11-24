@@ -22,6 +22,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { AWSHttpClient } from './aws/aws-http-client';
+import { UserService } from './user/user.service';
 
 export function getAuthServiceConfigs() {
   const config = new AuthServiceConfig(
@@ -66,6 +67,7 @@ export function getAuthServiceConfigs() {
     },
     AmplifyService,
     CognitoAuthService,
+    UserService,
     AWSHttpClient,
     AuthGuard],
   bootstrap: [AppComponent]

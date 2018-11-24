@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, BehaviorSubject, from, of } from 'rxjs';
-import { tap, catchError, flatMap } from 'rxjs/operators';
+import { tap, catchError, flatMap, map } from 'rxjs/operators';
 import Amplify, { Auth } from 'aws-amplify';
 import { environment } from '../../environments/environment';
 import { ICredentials } from '@aws-amplify/core';
@@ -58,10 +58,11 @@ export class CognitoAuthService {
 
         return from(Auth.federatedSignIn(provider, federaredResponse, federatedUser))
             .pipe(
-                tap((result: CognitoIdentityCredentials) => {
+                map((result: CognitoIdentityCredentials) => {
                     const { accessKeyId, secretAccessKey, sessionToken, identityId } = result;
                     this.credentails = { accessKeyId, secretAccessKey, sessionToken, identityId, authenticated: true };
                     this.loggedIn.next(true);
+                    return userData.email;
                 })
             );
     }
@@ -87,9 +88,7 @@ export class CognitoAuthService {
         return from(Auth.currentAuthenticatedUser())
             .pipe(
                 flatMap(async (result) => {
-                    if (!this.userInfo) {
-                        this.userInfo = result;
-                    }
+                    this.userInfo = result;
 
                     if (!this.credentails) {
                         this.credentails = await Auth.currentCredentials();
