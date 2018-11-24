@@ -76,7 +76,7 @@ export class CognitoAuthService {
     public signIn(email, password): Observable<any> {
         return from(Auth.signIn(email, password))
             .pipe(
-                tap(async () => {
+                flatMap(async () => {
                     this.credentails = await Auth.currentCredentials();
                     this.loggedIn.next(true);
                 })

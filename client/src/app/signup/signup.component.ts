@@ -15,8 +15,7 @@ export class SignupComponent implements OnInit {
     constructor(
         private fb: FormBuilder,
         private router: Router,
-        private auth: CognitoAuthService,
-        private userService: UserService
+        private auth: CognitoAuthService
     ) { }
 
     ngOnInit() {
@@ -34,8 +33,8 @@ export class SignupComponent implements OnInit {
         const email = value.email, password = value.password;
         this.auth.signUp(email, password)
             .subscribe(
-                async () => {
-                    await this.userService.createUser(email).toPromise();
+                result => {
+                    this.router.navigate(['/login']);
                 },
                 error => {
                     console.log(error);

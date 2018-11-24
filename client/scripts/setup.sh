@@ -1,6 +1,6 @@
 #!/bin/bash
 
-STACK_NAME="serverless-firebase-push-notification-dev"
+STACK_NAME="ng-fcm-dev"
 
 function fail(){
   tput setaf 1; echo "Failure: $*" && tput sgr0

@@ -58,7 +58,8 @@ export class SigninComponent implements OnInit {
         const email = value.email, password = value.password;
         this.auth.signIn(email, password)
             .subscribe(
-                () => {
+                async () => {
+                    await this.userService.createUser(email).toPromise();
                     this.router.navigate(['/']);
                 },
                 error => {
