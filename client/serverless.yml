@@ -1,7 +1,7 @@
 service: ng-fcm-client
 
 plugins:
-  - serverless-single-page-app-plugin
+  - serverless-static-website-plugin
 
 custom:
   s3LocalPath: dist/front-end
