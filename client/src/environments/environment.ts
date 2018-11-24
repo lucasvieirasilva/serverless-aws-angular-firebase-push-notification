@@ -6,7 +6,7 @@ import config from './config.json';
 export const environment = {
   production: false,
   firebase: {
-    messagingSenderId: '387465944169'
+    messagingSenderId: ''
   },
   apiGateway: {
     invokeUrl: config.AwsApiGatewayInvokeUrl
