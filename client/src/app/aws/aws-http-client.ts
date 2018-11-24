@@ -3,8 +3,8 @@ import * as ApiGatewayFactory from 'aws-api-gateway-client';
 import { CognitoAuthService } from '../auth/auth.service';
 import { environment } from '../../environments/environment';
 import { Observable, defer } from 'rxjs';
-import { ICredentials } from '@aws-amplify/core';
 import { IPathVariables, IQueryStringParams } from './types';
+import { ICredentials } from '@aws-amplify/core';
 
 @Injectable()
 export class AWSHttpClient {
@@ -12,28 +12,23 @@ export class AWSHttpClient {
     constructor(private auth: CognitoAuthService) {
     }
 
-    public get(path: string, pathVariables?: IPathVariables, queryParams?: IQueryStringParams): Observable<any> {
-        return this.request(path, 'GET', pathVariables, queryParams);
-    }
+    get = (path: string, pathVariables?: IPathVariables, queryParams?: IQueryStringParams) =>
+        this.request(path, 'GET', pathVariables, queryParams)
 
-    public post(path: string, pathVariables?: IPathVariables, queryParams?: IQueryStringParams, body?: any): Observable<any> {
-        return this.request(path, 'POST', pathVariables, queryParams, body ? body : {});
-    }
+    post = (path: string, pathVariables?: IPathVariables, queryParams?: IQueryStringParams, body?: any) =>
+        this.request(path, 'POST', pathVariables, queryParams, body ? body : {})
 
-    public put(path: string, pathVariables?: IPathVariables, queryParams?: IQueryStringParams, body?: any): Observable<any> {
-        return this.request(path, 'PUT', pathVariables, queryParams, body ? body : {});
-    }
+    put = (path: string, pathVariables?: IPathVariables, queryParams?: IQueryStringParams, body?: any) =>
+        this.request(path, 'PUT', pathVariables, queryParams, body ? body : {})
 
-    public delete(path: string, pathVariables?: IPathVariables, queryParams?: IQueryStringParams) {
-        return this.request(path, 'DELETE', pathVariables, queryParams);
-    }
+    delete = (path: string, pathVariables?: IPathVariables, queryParams?: IQueryStringParams) =>
+        this.request(path, 'DELETE', pathVariables, queryParams)
 
     private request(path: string, method: string, pathVariables?: IPathVariables,
         queryParams?: IQueryStringParams, body?: any): Observable<any> {
 
         return defer(async () => {
-            const credentials = await this.auth.getAwsCredentials();
-            const client = this.getApiGatewayClient(credentials);
+            const client = this.getApiGatewayClient(this.auth.credentails);
             const result = await client.invokeApi(pathVariables, path, method, { queryParams }, body);
 
             return result ? result.data : result;

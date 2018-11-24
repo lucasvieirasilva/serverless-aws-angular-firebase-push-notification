@@ -1,26 +1,26 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, BehaviorSubject, from, of } from 'rxjs';
-import { tap, map, catchError } from 'rxjs/operators';
+import { tap, catchError, flatMap } from 'rxjs/operators';
 import Amplify, { Auth } from 'aws-amplify';
 import { environment } from '../../environments/environment';
 import { ICredentials } from '@aws-amplify/core';
+import { CognitoIdentityCredentials } from 'aws-sdk/lib/core';
+import { AuthService } from 'angular-6-social-login';
 
 @Injectable()
 export class CognitoAuthService {
 
     public loggedIn: BehaviorSubject<boolean>;
+    public credentails: ICredentials;
     public userInfo: any;
 
     constructor(
-        private router: Router
+        private router: Router,
+        public socialService: AuthService,
     ) {
         Amplify.configure(environment.amplify);
         this.loggedIn = new BehaviorSubject<boolean>(false);
-    }
-
-    public async getAwsCredentials(): Promise<ICredentials> {
-        return await Auth.currentUserCredentials();
     }
 
     /** signup */
@@ -41,7 +41,9 @@ export class CognitoAuthService {
 
         return from(Auth.federatedSignIn(provider, { token, expires_at }, user))
             .pipe(
-                tap(() => {
+                tap((result: CognitoIdentityCredentials) => {
+                    const { accessKeyId, secretAccessKey, sessionToken, identityId } = result;
+                    this.credentails = { accessKeyId, secretAccessKey, sessionToken, identityId, authenticated: true };
                     this.loggedIn.next(true);
                 })
             );
@@ -56,7 +58,8 @@ export class CognitoAuthService {
     public signIn(email, password): Observable<any> {
         return from(Auth.signIn(email, password))
             .pipe(
-                tap(() => {
+                tap(async () => {
+                    this.credentails = await Auth.currentCredentials();
                     this.loggedIn.next(true);
                 })
             );
@@ -66,12 +69,17 @@ export class CognitoAuthService {
     public isAuthenticated(): Observable<boolean> {
         return from(Auth.currentAuthenticatedUser())
             .pipe(
-                map(result => {
+                flatMap(async (result) => {
                     this.userInfo = result;
+                    if (!this.credentails) {
+                        this.credentails = await Auth.currentCredentials();
+                    }
+
                     this.loggedIn.next(true);
                     return true;
                 }),
                 catchError(error => {
+                    console.error(error);
                     this.loggedIn.next(false);
                     this.userInfo = null;
                     return of(false);

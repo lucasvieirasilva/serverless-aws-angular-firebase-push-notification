@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import {
-    AuthService,
     FacebookLoginProvider,
     GoogleLoginProvider
 } from 'angular-6-social-login';
@@ -16,7 +15,6 @@ import { Router } from '@angular/router';
 export class SigninComponent implements OnInit {
 
     constructor(
-        private socialAuthService: AuthService,
         private fb: FormBuilder,
         private router: Router,
         private auth: CognitoAuthService) { }
@@ -31,7 +29,7 @@ export class SigninComponent implements OnInit {
             socialPlatformProvider = GoogleLoginProvider.PROVIDER_ID;
         }
 
-        const userData = await this.socialAuthService.signIn(socialPlatformProvider);
+        const userData = await this.auth.socialService.signIn(socialPlatformProvider);
 
         this.auth.federatedSignIn(socialPlatform, userData).subscribe(
             result => {
