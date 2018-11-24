@@ -1,4 +1,4 @@
-# Serverless Framework + Angular + Firebase
+# Angular Application
 
 ## Prerequirement
 
