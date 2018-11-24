@@ -58,9 +58,8 @@ export class CognitoAuthService {
 
         return from(Auth.federatedSignIn(provider, federaredResponse, federatedUser))
             .pipe(
-                map((result: CognitoIdentityCredentials) => {
-                    const { accessKeyId, secretAccessKey, sessionToken, identityId } = result;
-                    this.credentails = { accessKeyId, secretAccessKey, sessionToken, identityId, authenticated: true };
+                map((result) => {
+                    this.credentails = result;
                     this.loggedIn.next(true);
                     return userData.email;
                 })

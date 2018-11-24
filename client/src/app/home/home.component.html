@@ -1,3 +1,15 @@
-<p>Home</p>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="text-center">Send Firebase Notification</h1>
 
-<button type="button" class="btn btn-lg btn-primary" (click)="testApi()">Testar API</button>
+        <p>Current Message: {{ message | async }}</p>
+
+        <form [formGroup]="notificationForm" (ngSubmit)="onSubmit(notificationForm.value)">
+            <div class="form-group">
+                <label>Message</label>
+                <textarea class="form-control" formControlName="message" placeholder="Type a message here"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block mb-2">Send</button>
+        </form>
+    </div>
+</div>

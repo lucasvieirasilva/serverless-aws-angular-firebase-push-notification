@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
-import { MessagingService } from './messaging.service';
+import { MessagingService } from './fcm/messaging.service';
 import { AsyncPipe } from '@angular/common';
 import { environment } from 'src/environments/environment';
 import { AngularFireMessagingModule } from '@angular/fire/messaging';

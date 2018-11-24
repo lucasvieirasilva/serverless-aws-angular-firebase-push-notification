@@ -47,8 +47,39 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: { "Fn::Join" : ["",["arn:aws:dynamodb:",{"Ref":"AWS::Region"},":*:*"]] }
+    -
+      Effect: Allow
+      Action:
+        - sns:*
+      Resource: '*'
 
 functions:
+  sendNotification:
+    handler: src/notification/push.main
+    environment:
+      SNS_TOPIC_ARN: 
+        Ref: PushNotificationTopic
+    events:
+      - http:
+          path: /notify
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  registerDevice:
+    handler: src/user/device.main
+    environment:
+      SNS_TOPIC_ARN: 
+        Ref: PushNotificationTopic
+      ACCOUNT_ID:
+        Ref: 'AWS::AccountId'
+    events:
+      - http:
+          path: /user/device
+          method: post
+          cors: true
+          authorizer: aws_iam
+
   createUser:
     handler: src/user/create.main
     events:
@@ -80,6 +111,12 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
+
+    PushNotificationTopic:
+      Type: AWS::SNS::Topic
+      Properties: 
+        DisplayName: Push
+        TopicName: ng-fcm-push-topic
 
     # Cognito - User Pool
     CognitoUserPoolNgFcm:
