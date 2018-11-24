@@ -1,9 +1,0 @@
-{
-  "AwsApiGatewayInvokeUrl": "https://99iqt0i8qd.execute-api.us-east-1.amazonaws.com/dev",
-  "UserPoolId": "us-east-1_StvkXpaSQ",
-  "UserPoolClientId": "4ran5sqvur3unoqik5lcprjag7",
-  "IdentityPoolId": "us-east-1:74dbe42a-d6ca-4cb8-9310-40d10375c615",
-  "AwsRegion": "us-east-1",
-  "FacebookAppId": "2278011852232737",
-  "GoogleAppId": "206036539243-upk8p7t3fi5o52fjmp7qlbtvio19k455.apps.googleusercontent.com"
-}

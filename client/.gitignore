@@ -41,3 +41,4 @@ Thumbs.db
 
 # Serverless Framework
 .serverless
+/src/environments/config.json

@@ -13,7 +13,7 @@ npm i -g serverless
 Deploy environment on AWS
 
 ```shellscript
-serverless deploy
+npm run build-deploy
 ```
 
 ## FrontEnd

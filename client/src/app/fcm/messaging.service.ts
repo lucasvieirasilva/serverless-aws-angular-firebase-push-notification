@@ -16,9 +16,11 @@ export class MessagingService {
   requestPermission() {
     this.angularFireMessaging.requestToken.subscribe(
       (token) => {
-        this.token = token;
-        this.awsHttpClient.post('/user/device', { token }).subscribe(result => this.subscribed = true);
-        this.allowed = true;
+        if (token) {
+          this.token = token;
+          this.awsHttpClient.post('/user/device', { token }).subscribe(result => this.subscribed = true);
+          this.allowed = true;
+        }
       },
       (err) => {
         this.allowed = false;
