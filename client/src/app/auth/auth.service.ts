@@ -7,6 +7,7 @@ import { environment } from '../../environments/environment';
 import { ICredentials } from '@aws-amplify/core';
 import { CognitoIdentityCredentials } from 'aws-sdk/lib/core';
 import { AuthService } from 'angular-6-social-login';
+import { FederatedResponse, FederatedUser } from '@aws-amplify/auth/lib/types';
 
 @Injectable()
 export class CognitoAuthService {
@@ -35,11 +36,27 @@ export class CognitoAuthService {
     }
 
     public federatedSignIn(provider, userData): Observable<any> {
-        const { email, token, expiresIn } = userData;
-        const expires_at = expiresIn * 1000 + new Date().getTime();
-        const user = { name: email };
+        let federaredResponse: FederatedResponse = null;
+        let federatedUser: FederatedUser = null;
 
-        return from(Auth.federatedSignIn(provider, { token, expires_at }, user))
+        switch (provider) {
+            case 'facebook':
+                federaredResponse = {
+                    token: userData.token,
+                    expires_at: userData.expiresIn * 1000 + new Date().getTime()
+                };
+                federatedUser = { name: userData.email };
+                break;
+            case 'google':
+                federaredResponse = {
+                    token: userData.idToken,
+                    expires_at: 1000 + new Date().getTime()
+                };
+                federatedUser = { name: userData.email };
+                break;
+        }
+
+        return from(Auth.federatedSignIn(provider, federaredResponse, federatedUser))
             .pipe(
                 tap((result: CognitoIdentityCredentials) => {
                     const { accessKeyId, secretAccessKey, sessionToken, identityId } = result;
@@ -70,7 +87,10 @@ export class CognitoAuthService {
         return from(Auth.currentAuthenticatedUser())
             .pipe(
                 flatMap(async (result) => {
-                    this.userInfo = result;
+                    if (!this.userInfo) {
+                        this.userInfo = result;
+                    }
+
                     if (!this.credentails) {
                         this.credentails = await Auth.currentCredentials();
                     }
@@ -90,11 +110,13 @@ export class CognitoAuthService {
     public signOut() {
         from(Auth.signOut())
             .subscribe(
-                result => {
+                () => {
                     this.loggedIn.next(false);
+                    this.credentails = null;
+                    this.userInfo = null;
                     this.router.navigate(['/login']);
                 },
-                error => console.log(error)
+                error => console.error(error)
             );
     }
 }
